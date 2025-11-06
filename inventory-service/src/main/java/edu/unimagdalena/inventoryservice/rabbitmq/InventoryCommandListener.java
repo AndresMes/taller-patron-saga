@@ -10,6 +10,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -27,16 +29,19 @@ public class InventoryCommandListener {
             boolean reserved = inventoryItemService.reserveInventory(command);
 
             if (reserved) {
-                // ✅ Stock suficiente → Emitir evento de éxito
+                // ⚠️ CAMBIO: Calcular totalAmount
+                BigDecimal price = inventoryItemService.getProductPrice(command.getProductId());
+                BigDecimal totalAmount = price.multiply(BigDecimal.valueOf(command.getQuantity()));
+
                 InventoryReservedEvent event = new InventoryReservedEvent(
                         command.getOrderId(),
                         command.getProductId(),
                         command.getQuantity(),
-                        "Inventario reservado exitosamente"
+                        totalAmount  // ⚠️ NUEVO: campo totalAmount
                 );
 
                 rabbitTemplate.convertAndSend(
-                        RabbitMQConfig.INVENTORY_EVENTS_EXCHANGE,
+                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
                         RabbitMQConfig.INVENTORY_RESERVED_ROUTING_KEY,
                         event
                 );
@@ -44,7 +49,6 @@ public class InventoryCommandListener {
                 log.info("✅ Inventario reservado para orden: {}", command.getOrderId());
 
             } else {
-                // ❌ Stock insuficiente → Emitir evento de rechazo
                 Long availableQty = inventoryItemService.getAvailableQuantity(command.getProductId());
 
                 InventoryRejectedEvent event = new InventoryRejectedEvent(
@@ -56,7 +60,7 @@ public class InventoryCommandListener {
                 );
 
                 rabbitTemplate.convertAndSend(
-                        RabbitMQConfig.INVENTORY_EVENTS_EXCHANGE,
+                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
                         RabbitMQConfig.INVENTORY_REJECTED_ROUTING_KEY,
                         event
                 );
@@ -67,7 +71,6 @@ public class InventoryCommandListener {
         } catch (Exception e) {
             log.error("Error procesando reserva de inventario: {}", e.getMessage(), e);
 
-            // En caso de error, también emitir rechazo
             InventoryRejectedEvent errorEvent = new InventoryRejectedEvent(
                     command.getOrderId(),
                     command.getProductId(),
@@ -77,7 +80,7 @@ public class InventoryCommandListener {
             );
 
             rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.INVENTORY_EVENTS_EXCHANGE,
+                    RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
                     RabbitMQConfig.INVENTORY_REJECTED_ROUTING_KEY,
                     errorEvent
             );

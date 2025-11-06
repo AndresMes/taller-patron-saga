@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -24,10 +25,8 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
     @Override
     public InventoryItem getById(Long id) {
-        InventoryItem item = inventoryItemRepository.findById(id).
-                orElseThrow(() -> new ItemNotFoundException("Item con id: "+id+" no encontrado"));
-
-        return item;
+        return inventoryItemRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Item con id: " + id + " no encontrado"));
     }
 
     @Override
@@ -37,8 +36,8 @@ public class InventoryItemServiceImpl implements InventoryItemService {
 
     @Override
     public InventoryItem update(InventoryItem item, Long id) {
-        InventoryItem baseItem = inventoryItemRepository.findById(id).
-                orElseThrow(() -> new ItemNotFoundException("Item con id: "+id+" no encontrado"));
+        InventoryItem baseItem = inventoryItemRepository.findById(id)
+                .orElseThrow(() -> new ItemNotFoundException("Item con id: " + id + " no encontrado"));
 
         if (item.getPrice() != null) baseItem.setPrice(item.getPrice());
         if (item.getIdProduct() != null) baseItem.setIdProduct(item.getIdProduct());
@@ -58,25 +57,33 @@ public class InventoryItemServiceImpl implements InventoryItemService {
     @Override
     @Transactional
     public boolean reserveInventory(ReserveInventoryCommand command) {
-        InventoryItem item = inventoryItemRepository.findById(command.getProductId())
+        // ⚠️ CAMBIO: Buscar por idProduct (String) en lugar de id (Long)
+        InventoryItem item = inventoryItemRepository.findByIdProduct(command.getProductId())
                 .orElseThrow(() -> new ItemNotFoundException(
                         "Producto con id: " + command.getProductId() + " no encontrado"));
 
         if (item.getAvailableQuantity() >= command.getQuantity()) {
             item.setAvailableQuantity(item.getAvailableQuantity() - command.getQuantity());
             inventoryItemRepository.save(item);
-            return true; // Reserva exitosa
+            return true;
         }
 
-        return false; // Stock insuficiente
+        return false;
     }
 
     @Override
-    public Long getAvailableQuantity(Long productId) {
-        InventoryItem item = inventoryItemRepository.findById(productId)
+    public Long getAvailableQuantity(String productId) {
+        InventoryItem item = inventoryItemRepository.findByIdProduct(productId)
                 .orElseThrow(() -> new ItemNotFoundException(
                         "Producto con id: " + productId + " no encontrado"));
         return item.getAvailableQuantity();
     }
-}
 
+    @Override
+    public BigDecimal getProductPrice(String productId) {
+        InventoryItem item = inventoryItemRepository.findByIdProduct(productId)
+                .orElseThrow(() -> new ItemNotFoundException(
+                        "Producto con id: " + productId + " no encontrado"));
+        return item.getPrice();
+    }
+}

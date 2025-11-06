@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InventoryRejectedEvent {
     private String orderId;
-    private Long productId;
+    private String productId;  // ⚠️ CAMBIO: era Long, ahora String
     private Integer requestedQuantity;
     private Long availableQuantity;
     private String reason;

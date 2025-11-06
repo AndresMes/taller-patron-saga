@@ -10,53 +10,45 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // Nombres de exchanges
-    public static final String INVENTORY_EXCHANGE = "inventory.exchange";
-    public static final String INVENTORY_EVENTS_EXCHANGE = "inventory.events.exchange";
-
-    // Cola de comandos
+    // ⚠️ CAMBIOS: Estos nombres DEBEN coincidir con order-service
+    public static final String INVENTORY_COMMAND_EXCHANGE = "inventory.command.exchange";
     public static final String RESERVE_INVENTORY_QUEUE = "reserve.inventory.queue";
     public static final String RESERVE_INVENTORY_ROUTING_KEY = "inventory.reserve";
+    public static final String RELEASE_INVENTORY_ROUTING_KEY = "inventory.release";
 
-    // Routing keys de eventos
+    // Exchange para eventos salientes (hacia order-service)
+    public static final String INVENTORY_EVENT_EXCHANGE = "inventory.event.exchange";
     public static final String INVENTORY_RESERVED_ROUTING_KEY = "inventory.reserved";
     public static final String INVENTORY_REJECTED_ROUTING_KEY = "inventory.rejected";
 
-    // Exchange para comandos entrantes
     @Bean
-    public DirectExchange inventoryExchange() {
-        return new DirectExchange(INVENTORY_EXCHANGE);
+    public DirectExchange inventoryCommandExchange() {
+        return new DirectExchange(INVENTORY_COMMAND_EXCHANGE);
     }
 
-    // Exchange para eventos salientes
     @Bean
-    public TopicExchange inventoryEventsExchange() {
-        return new TopicExchange(INVENTORY_EVENTS_EXCHANGE);
+    public TopicExchange inventoryEventExchange() {
+        return new TopicExchange(INVENTORY_EVENT_EXCHANGE);
     }
 
-    // Cola para recibir comandos de reserva
     @Bean
     public Queue reserveInventoryQueue() {
-        return QueueBuilder.durable(RESERVE_INVENTORY_QUEUE)
-                .build();
+        return QueueBuilder.durable(RESERVE_INVENTORY_QUEUE).build();
     }
 
-    // Binding: comando de reserva
     @Bean
     public Binding reserveInventoryBinding() {
         return BindingBuilder
                 .bind(reserveInventoryQueue())
-                .to(inventoryExchange())
+                .to(inventoryCommandExchange())
                 .with(RESERVE_INVENTORY_ROUTING_KEY);
     }
 
-    // Convertidor JSON
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
-    // RabbitTemplate configurado
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);

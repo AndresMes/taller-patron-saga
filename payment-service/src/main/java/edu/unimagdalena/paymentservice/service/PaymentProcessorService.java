@@ -25,7 +25,6 @@ public class PaymentProcessorService {
     }
 
     public void processPayment(ProcessPaymentCommand cmd) {
-
         UUID orderId = UUID.fromString(cmd.orderId());
 
         boolean approved = cmd.amount().doubleValue() <= 100;
@@ -38,12 +37,12 @@ public class PaymentProcessorService {
             ));
 
             rabbitTemplate.convertAndSend(
-                    PAYMENT_EXCHANGE,
-                    ROUTING_PAYMENT_COMPLETED,
-                    new PaymentCompletedEvent(cmd.orderId())
+                    PAYMENT_EVENT_EXCHANGE,  // ⚠️ CAMBIO
+                    PAYMENT_COMPLETED_ROUTING_KEY,  // ⚠️ CAMBIO
+                    new PaymentCompletedEvent(cmd.orderId(), cmd.amount())  // ⚠️ AGREGAR amount
             );
 
-            System.out.println(" Pago exitoso para orden " + cmd.orderId());
+            System.out.println("✅ Pago exitoso para orden " + cmd.orderId());
 
         } else {
             paymentRepository.save(new Payment(
@@ -53,12 +52,12 @@ public class PaymentProcessorService {
             ));
 
             rabbitTemplate.convertAndSend(
-                    PAYMENT_EXCHANGE,
-                    ROUTING_PAYMENT_FAILED,
-                    new PaymentFailedEvent(cmd.orderId(), "Pago rechazado: monto excedido")
+                    PAYMENT_EVENT_EXCHANGE,  // ⚠️ CAMBIO
+                    PAYMENT_FAILED_ROUTING_KEY,  // ⚠️ CAMBIO
+                    new PaymentFailedEvent(cmd.orderId(), cmd.amount(), "Pago rechazado: monto excedido")  // ⚠️ AGREGAR amount
             );
 
-            System.out.println("Pago fallido para orden " + cmd.orderId());
+            System.out.println("❌ Pago fallido para orden " + cmd.orderId());
         }
     }
 }

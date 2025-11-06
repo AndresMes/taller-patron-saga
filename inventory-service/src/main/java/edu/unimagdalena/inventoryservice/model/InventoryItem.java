@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -13,16 +15,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InventoryItem {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idInventoryItem;
 
     @Column
-    private String idProduct;
+    private String idProduct;  // ✅ Ya es String, perfecto
 
     @Column
     private Long availableQuantity;
 
     @Column
-    private Double price;
-
+    private BigDecimal price;  // ⚠️ CAMBIO: era Double, ahora BigDecimal
 }

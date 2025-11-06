@@ -1,0 +1,36 @@
+package edu.unimagdalena.orderservice.config;
+
+import org.springframework.amqp.support.converter.ClassMapper;
+import org.springframework.amqp.core.MessageProperties;
+
+public class SimpleNameClassMapper implements ClassMapper {
+
+    private static final String LOCAL_DTO_PACKAGE = "edu.unimagdalena.orderservice.dto";
+
+    @Override
+    public void fromClass(Class<?> clazz, MessageProperties props) {
+        // Al enviar, ponemos solo el nombre simple
+        props.getHeaders().put("__TypeId__", clazz.getSimpleName());
+    }
+
+    @Override
+    public Class<?> toClass(MessageProperties props) {
+        Object typeId = props.getHeaders().get("__TypeId__");
+        if (typeId == null) {
+            return Object.class;
+        }
+
+        String simpleName = typeId.toString();
+        // Si viene con el paquete completo, solo tomamos el nombre de la clase
+        if (simpleName.contains(".")) {
+            simpleName = simpleName.substring(simpleName.lastIndexOf('.') + 1);
+        }
+
+        try {
+            return Class.forName(LOCAL_DTO_PACKAGE + "." + simpleName);
+        } catch (ClassNotFoundException e) {
+            // Si no se encuentra, devolvemos Object para evitar romper el listener
+            return Object.class;
+        }
+    }
+}

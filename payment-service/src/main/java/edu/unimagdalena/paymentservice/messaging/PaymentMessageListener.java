@@ -1,6 +1,5 @@
-package edu.unimagdalena.paymentservice.messaging.listener;
+package edu.unimagdalena.paymentservice.messaging;
 
-import edu.unimagdalena.paymentservice.messaging.command.ProcessPaymentCommand;
 import edu.unimagdalena.paymentservice.service.PaymentProcessorService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;

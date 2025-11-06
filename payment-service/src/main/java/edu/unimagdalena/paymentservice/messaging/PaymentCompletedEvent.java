@@ -1,4 +1,4 @@
-package edu.unimagdalena.paymentservice.messaging.event;
+package edu.unimagdalena.paymentservice.messaging;
 
 import java.math.BigDecimal;
 

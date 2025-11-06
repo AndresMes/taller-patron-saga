@@ -3,6 +3,7 @@ package edu.unimagdalena.orderservice.config;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -33,11 +34,9 @@ public class RabbitMQConfig {
     public static final String PAYMENT_FAILED_ROUTING_KEY = "payment.failed";
 
     @Bean
-    public MessageConverter jsonMessageConverter() {
+    public MessageConverter messageConverter() {
         Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
-        // ⚠️ SOLUCIÓN: Configurar para NO usar __TypeId__ en los headers
-        converter.setCreateMessageIds(true);
-        converter.setAlwaysConvertToInferredType(true);
+        converter.setClassMapper(new SimpleNameClassMapper()); // 👈 nuestro mapper personalizado
         return converter;
     }
 

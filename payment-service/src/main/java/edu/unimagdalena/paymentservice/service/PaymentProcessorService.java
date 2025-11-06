@@ -1,8 +1,8 @@
 package edu.unimagdalena.paymentservice.service;
 
-import edu.unimagdalena.paymentservice.messaging.command.ProcessPaymentCommand;
-import edu.unimagdalena.paymentservice.messaging.event.PaymentCompletedEvent;
-import edu.unimagdalena.paymentservice.messaging.event.PaymentFailedEvent;
+import edu.unimagdalena.paymentservice.messaging.ProcessPaymentCommand;
+import edu.unimagdalena.paymentservice.messaging.PaymentCompletedEvent;
+import edu.unimagdalena.paymentservice.messaging.PaymentFailedEvent;
 import edu.unimagdalena.paymentservice.model.Payment;
 import edu.unimagdalena.paymentservice.model.PaymentStatus;
 import edu.unimagdalena.paymentservice.repository.PaymentRepository;

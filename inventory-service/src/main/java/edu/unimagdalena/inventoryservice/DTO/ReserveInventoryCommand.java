@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReserveInventoryCommand {
     private String orderId;
-    private String productId;  // ⚠️ CAMBIO: era Long, ahora String
+    private String productId;
     private Integer quantity;
 }

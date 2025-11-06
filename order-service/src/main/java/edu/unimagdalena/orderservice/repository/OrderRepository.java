@@ -11,12 +11,12 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    // Buscar órdenes por estado
+
     List<Order> findByStatus(OrderStatus status);
 
-    // Buscar órdenes por productId
+
     List<Order> findByProductId(String productId);
 
-    // Buscar órdenes por productId y estado
+
     List<Order> findByProductIdAndStatus(String productId, OrderStatus status);
 }

@@ -12,22 +12,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // Exchange para comandos de inventario
+
     public static final String INVENTORY_COMMAND_EXCHANGE = "inventory.command.exchange";
     public static final String RESERVE_INVENTORY_ROUTING_KEY = "inventory.reserve";
     public static final String RELEASE_INVENTORY_ROUTING_KEY = "inventory.release";
 
-    // Exchange para comandos de pago
     public static final String PAYMENT_COMMAND_EXCHANGE = "payment.command.exchange";
     public static final String PROCESS_PAYMENT_ROUTING_KEY = "payment.process";
 
-    // Cola para eventos de inventario
     public static final String INVENTORY_EVENT_QUEUE = "order.inventory.event.queue";
     public static final String INVENTORY_EVENT_EXCHANGE = "inventory.event.exchange";
     public static final String INVENTORY_RESERVED_ROUTING_KEY = "inventory.reserved";
     public static final String INVENTORY_REJECTED_ROUTING_KEY = "inventory.rejected";
 
-    // Cola para eventos de pago
     public static final String PAYMENT_EVENT_QUEUE = "order.payment.event.queue";
     public static final String PAYMENT_EVENT_EXCHANGE = "payment.event.exchange";
     public static final String PAYMENT_COMPLETED_ROUTING_KEY = "payment.completed";
@@ -83,7 +80,6 @@ public class RabbitMQConfig {
                 .with(INVENTORY_REJECTED_ROUTING_KEY);
     }
 
-    // Configuración para eventos de Pago
     @Bean
     public Queue paymentEventQueue() {
         return new Queue(PAYMENT_EVENT_QUEUE, true);

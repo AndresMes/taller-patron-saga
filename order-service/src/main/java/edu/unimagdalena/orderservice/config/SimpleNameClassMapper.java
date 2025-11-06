@@ -9,7 +9,6 @@ public class SimpleNameClassMapper implements ClassMapper {
 
     @Override
     public void fromClass(Class<?> clazz, MessageProperties props) {
-        // Al enviar, ponemos solo el nombre simple
         props.getHeaders().put("__TypeId__", clazz.getSimpleName());
     }
 
@@ -21,7 +20,6 @@ public class SimpleNameClassMapper implements ClassMapper {
         }
 
         String simpleName = typeId.toString();
-        // Si viene con el paquete completo, solo tomamos el nombre de la clase
         if (simpleName.contains(".")) {
             simpleName = simpleName.substring(simpleName.lastIndexOf('.') + 1);
         }
@@ -29,7 +27,6 @@ public class SimpleNameClassMapper implements ClassMapper {
         try {
             return Class.forName(LOCAL_DTO_PACKAGE + "." + simpleName);
         } catch (ClassNotFoundException e) {
-            // Si no se encuentra, devolvemos Object para evitar romper el listener
             return Object.class;
         }
     }

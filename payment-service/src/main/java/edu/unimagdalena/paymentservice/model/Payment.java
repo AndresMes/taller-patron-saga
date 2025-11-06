@@ -35,7 +35,7 @@ public class Payment {
         this.status = status;
     }
 
-    // getters y setters (o usa Lombok si quieres)
+
     public UUID getId() {
         return id;
     }

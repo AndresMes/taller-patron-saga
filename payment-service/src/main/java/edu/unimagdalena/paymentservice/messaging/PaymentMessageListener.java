@@ -15,7 +15,7 @@ public class PaymentMessageListener {
 
     @RabbitListener(queues = "process.payment.queue")
     public void handleProcessPayment(ProcessPaymentCommand command) {
-        System.out.println("📥 Comando recibido en payment-service: " + command);
+        System.out.println("Comando recibido en payment-service: " + command);
         paymentService.processPayment(command);
     }
 }

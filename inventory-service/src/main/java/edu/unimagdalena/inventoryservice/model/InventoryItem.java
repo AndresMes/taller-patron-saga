@@ -20,11 +20,11 @@ public class InventoryItem {
     private Long idInventoryItem;
 
     @Column
-    private String idProduct;  // ✅ Ya es String, perfecto
+    private String idProduct;
 
     @Column
     private Long availableQuantity;
 
     @Column
-    private BigDecimal price;  // ⚠️ CAMBIO: era Double, ahora BigDecimal
+    private BigDecimal price;
 }

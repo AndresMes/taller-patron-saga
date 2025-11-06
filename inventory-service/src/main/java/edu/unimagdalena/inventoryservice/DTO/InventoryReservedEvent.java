@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class InventoryReservedEvent {
     private String orderId;
-    private String productId;  // ⚠️ CAMBIO: era Long, ahora String
+    private String productId;
     private Integer quantity;
-    private BigDecimal totalAmount;  // ⚠️ NUEVO CAMPO REQUERIDO
+    private BigDecimal totalAmount;
 }

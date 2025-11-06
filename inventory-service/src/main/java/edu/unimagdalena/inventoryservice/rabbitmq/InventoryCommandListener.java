@@ -29,7 +29,7 @@ public class InventoryCommandListener {
             boolean reserved = inventoryItemService.reserveInventory(command);
 
             if (reserved) {
-                // ⚠️ CAMBIO: Calcular totalAmount
+
                 BigDecimal price = inventoryItemService.getProductPrice(command.getProductId());
                 BigDecimal totalAmount = price.multiply(BigDecimal.valueOf(command.getQuantity()));
 
@@ -37,16 +37,16 @@ public class InventoryCommandListener {
                         command.getOrderId(),
                         command.getProductId(),
                         command.getQuantity(),
-                        totalAmount  // ⚠️ NUEVO: campo totalAmount
+                        totalAmount
                 );
 
                 rabbitTemplate.convertAndSend(
-                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
+                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,
                         RabbitMQConfig.INVENTORY_RESERVED_ROUTING_KEY,
                         event
                 );
 
-                log.info("✅ Inventario reservado para orden: {}", command.getOrderId());
+                log.info("Inventario reservado para orden: {}", command.getOrderId());
 
             } else {
                 Long availableQty = inventoryItemService.getAvailableQuantity(command.getProductId());
@@ -60,12 +60,12 @@ public class InventoryCommandListener {
                 );
 
                 rabbitTemplate.convertAndSend(
-                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
+                        RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,
                         RabbitMQConfig.INVENTORY_REJECTED_ROUTING_KEY,
                         event
                 );
 
-                log.warn("❌ Reserva rechazada para orden: {} - Stock insuficiente", command.getOrderId());
+                log.warn("Reserva rechazada para orden: {} - Stock insuficiente", command.getOrderId());
             }
 
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class InventoryCommandListener {
             );
 
             rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,  // ⚠️ CAMBIO
+                    RabbitMQConfig.INVENTORY_EVENT_EXCHANGE,
                     RabbitMQConfig.INVENTORY_REJECTED_ROUTING_KEY,
                     errorEvent
             );

@@ -3,6 +3,7 @@ package edu.unimagdalena.paymentservice.config;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // ⚠️ CAMBIOS: Estos nombres DEBEN coincidir con order-service
     public static final String PAYMENT_COMMAND_EXCHANGE = "payment.command.exchange";
     public static final String PROCESS_PAYMENT_QUEUE = "process.payment.queue";
     public static final String PROCESS_PAYMENT_ROUTING_KEY = "payment.process";
 
-    // Exchange para eventos salientes (hacia order-service)
     public static final String PAYMENT_EVENT_EXCHANGE = "payment.event.exchange";
     public static final String PAYMENT_COMPLETED_ROUTING_KEY = "payment.completed";
     public static final String PAYMENT_FAILED_ROUTING_KEY = "payment.failed";
@@ -45,7 +44,16 @@ public class RabbitMQConfig {
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+        converter.setClassMapper(classMapper());
+        return converter;
+    }
+
+    @Bean
+    public DefaultClassMapper classMapper() {
+        DefaultClassMapper classMapper = new DefaultClassMapper();
+        classMapper.setTrustedPackages("*");
+        return classMapper;
     }
 
     @Bean

@@ -3,6 +3,7 @@ package edu.unimagdalena.inventoryservice.rabbitmq;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,13 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    // ⚠️ CAMBIOS: Estos nombres DEBEN coincidir con order-service
     public static final String INVENTORY_COMMAND_EXCHANGE = "inventory.command.exchange";
     public static final String RESERVE_INVENTORY_QUEUE = "reserve.inventory.queue";
     public static final String RESERVE_INVENTORY_ROUTING_KEY = "inventory.reserve";
     public static final String RELEASE_INVENTORY_ROUTING_KEY = "inventory.release";
 
-    // Exchange para eventos salientes (hacia order-service)
     public static final String INVENTORY_EVENT_EXCHANGE = "inventory.event.exchange";
     public static final String INVENTORY_RESERVED_ROUTING_KEY = "inventory.reserved";
     public static final String INVENTORY_REJECTED_ROUTING_KEY = "inventory.rejected";
@@ -46,7 +45,16 @@ public class RabbitMQConfig {
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+        converter.setClassMapper(classMapper());
+        return converter;
+    }
+
+    @Bean
+    public DefaultClassMapper classMapper() {
+        DefaultClassMapper classMapper = new DefaultClassMapper();
+        classMapper.setTrustedPackages("*");
+        return classMapper;
     }
 
     @Bean

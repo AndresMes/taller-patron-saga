@@ -3,6 +3,7 @@ package edu.unimagdalena.orderservice.config;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +35,16 @@ public class RabbitMQConfig {
 
     @Bean
     public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+        converter.setClassMapper(classMapper());
+        return converter;
+    }
+
+    @Bean
+    public DefaultClassMapper classMapper() {
+        DefaultClassMapper classMapper = new DefaultClassMapper();
+        classMapper.setTrustedPackages("*");
+        return classMapper;
     }
 
     @Bean
@@ -53,7 +63,7 @@ public class RabbitMQConfig {
     public DirectExchange paymentCommandExchange() {
         return new DirectExchange(PAYMENT_COMMAND_EXCHANGE);
     }
-    
+
     @Bean
     public Queue inventoryEventQueue() {
         return new Queue(INVENTORY_EVENT_QUEUE, true);

@@ -1,4 +1,4 @@
-package edu.unimagdalena.orderservice.listener;
+package edu.unimagdalena.orderservice.listeners;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.unimagdalena.orderservice.config.RabbitMQConfig;
